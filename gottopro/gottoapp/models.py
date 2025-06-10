@@ -60,6 +60,7 @@ class Company(models.Model):
 class Job(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='jobs')
     name = models.CharField(max_length=20)
+    image = models.ImageField(upload_to='gotto_imgs/')
     content = models.TextField()
     location = models.TextField()
     salary = models.IntegerField(default=0)

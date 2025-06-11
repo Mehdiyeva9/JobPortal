@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from gottoapp.models import (
     Category, BestService, Profession, Type, Company, Job, Favoritelist, 
-    Savelist, Testimonial, Message, SiteSettings, SocialMedia
+    Savelist, Testimonial, Message, SiteSettings, SocialMedia,Tag
     )
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -67,10 +67,39 @@ class SocialMediaSerializer(serializers.ModelSerializer):
         model = SocialMedia
         fields = "__all__"
 
+class ProfessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profession
+        fields = "__all__"
+
+class TypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Type
+        fields = "__all__"
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = "__all__"
+
 class JobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
         fields = "__all__"
+
+class JobRetrieveSerializer(serializers.ModelSerializer):
+    profession = ProfessionSerializer()
+    type = TypeSerializer()
+    similar_jobs = serializers.SerializerMethodField()
+    class Meta:
+        model = Job
+        fields = "__all__"
+
+    def get_similar_jobs(self, obj):
+        similar_jobs = Job.objects.filter(
+            tags_in = obj.tags.all()
+        )
+        return JobSerializer(similar_jobs, many=True).data
 
 class FavoriteListSerializer(serializers.ModelSerializer):
     job = JobSerializer()

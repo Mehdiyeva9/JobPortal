@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,7 +12,7 @@ from gottoapp.models import (
 from gottoapp.api.serializers import (
     UserCreateSerializer, JobSerializer, BestServiceSerializer, SiteSettingsSerializer, 
     FeaturedJobsSerializer, RecentJobsSerializer, TestimonialSerializer, 
-    SocialMediaSerializer, MessageSerializer, FavoriteListSerializer, 
+    SocialMediaSerializer, MessageSerializer, FavoriteListSerializer, JobRetrieveSerializer, 
     FavoriteListCreateSerializer, SaveListSerializer, SaveListCreateSerializer)
 
 class UserCreateAPIView(CreateAPIView):
@@ -21,7 +22,7 @@ class UserCreateAPIView(CreateAPIView):
 class CategoryJobListAPIView(ListAPIView):
     def get_queryset(self):
         category_id = self.kwargs.get("id")
-        category = Category.objects.get(id=category)
+        category = get_object_or_404(Category, id=category_id)
         return Job.objects.filter(
             category = category
         )
@@ -30,7 +31,7 @@ class CategoryJobListAPIView(ListAPIView):
 class CompanyJobListAPIView(ListAPIView):
     def get_queryset(self):
         company_id = self.kwargs.get('id')
-        company = Company.objects.get(id=company_id)
+        company = get_object_or_404(Company, id=company_id)
         return Job.objects.filter(
             company = company
         )
@@ -49,7 +50,7 @@ class FeaturedJobsListAPIView(ListAPIView):
     serializer_class = FeaturedJobsSerializer
 
 class RecentJobsListAPIView(ListAPIView):
-    queryset = Job.objects.all()
+    queryset = Job.objects.all()[:10]
     serializer_class = RecentJobsSerializer
 
 class TestimonialListAPIView(ListAPIView):
@@ -62,7 +63,8 @@ class SocialMediaListAPIView(ListAPIView):
 
 class JobRetrieveAPIView(RetrieveAPIView):
     queryset = Job.objects.all()
-    serializer_class = JobSerializer
+    serializer_class = JobRetrieveSerializer
+    lookup_field = ("id")
 
 class MessageCreateAPIView(CreateAPIView):
     queryset = Message.objects.all()

@@ -41,6 +41,15 @@ class Type(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Tag(models.Model):
+    name = models.TextField()
+
+    class Meta:
+        ordering = ('-id', )
+
+    def __str__(self):
+        return self.name
 
 class Company(models.Model):
     logo = models.ImageField(upload_to='gotto_imgs/')
@@ -67,6 +76,7 @@ class Job(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     profession = models.ForeignKey(Profession, on_delete=models.CASCADE, related_name='jobs')
     type = models.ForeignKey(Type, on_delete=models.CASCADE, related_name='jobs')
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='jobs', blank=True, null=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='jobs')
 
     class Meta:
